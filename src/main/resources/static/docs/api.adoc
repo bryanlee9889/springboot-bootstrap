@@ -1,0 +1,1280 @@
+= LET API
+Doc Writer <minhdl9889@gmail.com>
+v1.0, 2016
+:toc: left
+:toclevels: 5
+:sectnums:
+:sectnumlevels: 3
+
+== Introduction
+This is document for LET project
+
+== API Configuration
+. Base URL
+
+    http://let.tramsdev.co.kr:5001
+
+. Response code
+
+- 0   : OK
+- 500 : Failed to upload file
+- 501 : Invalid file content type
+- 502 : Invalid file size
+- 994 : Missing header: X-AUTH-TOKEN
+- 995 : Missing header: X-DEVICE
+- 996 : Unauthorized request
+- 997 : Request params missing or invalid
+- 999 : Unhandled exception
+
+. Header
+.. All APIs must contain
+
+    X-DEVICE : Base64.ENCODE(UUID + ";" + OS + ";" + VERSION + ";" + LOCALE)
+
+    UUID : device's uuid
+    OS : IOS | ANDROID
+    VERSION : app's version (eg v1.0.7)
+    LOCALE : en | ko
+
+
+.. Authenticated APIs contain
+
+    X-AUTH-TOKEN : token returned after activation or login success
+
+== API List
+=== Public API
+
+    APIs that not required header X-AUTH-TOKEN
+
+'''
+==== Registration
+===== Phone check
+. URL
+
+   /api/v1/anons/auth/phone/check
+
+. Method
+
+    POST
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Request
+
+    {
+        "mobilephone": "(+84)943330963"
+    }
+
+. Response
+.. Success
+... Device's not registered before
+
+    {
+        "code"    : 0,
+        "message" : "OK"
+    }
+
+... Device's registered before
+
+    {
+        "code"    : 4,
+        "message" : "Resource existed",
+        "data"    : {
+            "errors" : {
+                "mobilephone" : "Resource existed"
+            }
+        }
+    }
+
+.. Error
+
+    {
+        "code"    : 997,
+        "message" : "Request params missing or invalid",
+        "data"    : {
+            "errors" : {
+                "mobilephone" : "Field not found or invalid",
+                "uuid"  : "Field not found or invalid"
+            }
+        }
+    }
+
+'''
+===== Phone register
+. URL
+
+   /api/v1/anons/auth/phone/register
+
+. Method
+
+    POST
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Request
+
+    {
+        "mobilephone": "(+84)943330963
+    }
+
+. Response
+.. Success
+
+    Return token key for testing
+
+    {
+        "code"    : 0,
+        "message" : "OK",
+        "data"    : "1234"
+    }
+
+.. Error
+
+    {
+        "code"    : 997,
+        "message" : "Request params missing or invalid",
+        "data"    : {
+            "errors" : {
+                "mobilephone" : "Field not found or invalid",
+                "uuid"  : "Field not found or invalid"
+            }
+        }
+    }
+
+'''
+===== Activate
+. URL
+
+   /api/v1/anons/auth/phone/active
+
+. Method
+
+    POST
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Request
+
+    {
+        "mobilephone"       : "(+84)943330963",
+        "token"       : "1234",
+        "deviceToken" : "0987654321"
+    }
+
+. Response
+.. Success
+
+    Return user's info and token (key) for authentication
+
+    {
+        "code"      : 0,
+        "message"   : "OK",
+        "data"      : {
+            "id": 1000,
+            "createdDate": 1467510856000,
+            "modifiedDate": 1446904335000,
+            "username": "saovv",
+            "status": 1,
+            "mobilephone": "(82)12345678910",
+            "nickname": "blawsonrr",
+            "email": "sfoxrr@whitehouse.gov",
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif",
+            "statusMessage": "i am feeling lucky",
+            "team": "Babblestorm",
+            "position": "ADMIN",
+            "key": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ7XCJpZFwiOjEwMDAsXCJleHBcIjoxNDc4NzYxMTE3NDc1LFwiaWF0XCI6MTQ3NjE2OTExNzQ3NCxcInVzZXJuYW1lXCI6XCJzYW92dlwifSJ9.3OaCo7-8udcUhtHbGr6Jw2Qzlyp3zmuVFGox-b2jnojXzWK8N8lb2xayy_-9o_TZDF9D0vPc7VdzVljMDf4sUg"
+        }
+    }
+
+.. Error
+
+    {
+        "code"    : 997,
+        "message" : "Request params missing or invalid",
+        "data"    : {
+            "errors" : {
+                "mobilephone" : "Field not found or invalid",
+                "token" : "Field not found or invalid",
+                "uuid"  : "Field not found or invalid"
+            }
+        }
+    }
+
+'''
+==== Authentication
+===== Login
+. URL
+
+   /api/v1/anons/auth/login
+
+. Method
+
+    POST
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Request
+
+    {
+        "username"       : "minhdl",
+        "password"       : "1234",
+        "deviceToken"    : "0987654321"
+    }
+
+. Response
+.. Success
+
+    Return user's info and token (key) for authentication
+
+    {
+        "code"      : 0,
+        "message"   : "OK",
+        "data"      : {
+            "id": 1000,
+            "createdDate": 1467510856000,
+            "modifiedDate": 1446904335000,
+            "username": "saovv",
+            "status": 1,
+            "mobilephone": "(82)12345678910",
+            "nickname": "blawsonrr",
+            "email": "sfoxrr@whitehouse.gov",
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif",
+            "statusMessage": "i am feeling lucky",
+            "team": "Babblestorm",
+            "position": "ADMIN",
+            "key": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ7XCJpZFwiOjEwMDAsXCJleHBcIjoxNDc4NzYxMTE3NDc1LFwiaWF0XCI6MTQ3NjE2OTExNzQ3NCxcInVzZXJuYW1lXCI6XCJzYW92dlwifSJ9.3OaCo7-8udcUhtHbGr6Jw2Qzlyp3zmuVFGox-b2jnojXzWK8N8lb2xayy_-9o_TZDF9D0vPc7VdzVljMDf4sUg"
+        }
+    }
+
+.. Error
+
+    {
+        "code"    : 997,
+        "message" : "Request params missing or invalid",
+        "data"    : {
+            "errors" : {
+                "username" : "Field not found or invalid",
+                "password" : "Field not found or invalid"
+            }
+        }
+    }
+
+'''
+===== Find ID
+. URL
+
+   /api/v1/anons/auth/reset/findId
+
+. Method
+
+    GET
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Request
+
+    Find by phone number
+
+    "mobilephone" : "(+84)943330963"
+    "name"  : "voncount"
+
+    Find by email
+
+    "email" : "minhdl9889@gmail.com"
+    "name"  : "voncount"
+
+. Response
+.. Success
+
+    Return username
+
+    {
+        "code"      : 0,
+        "message"   : "OK",
+        "data"      : {
+            "username"  : "voncxxxx"
+        }
+    }
+
+.. Error
+
+    {
+        "code"    : 997,
+        "message" : "Request params missing or invalid",
+        "data"    : {
+            "errors" : {
+                "name" : "Field not found or invalid",
+                "uuid" : "Field not found or invalid",
+                "mobilephone"  : "Field not found or invalid",
+                "email"  : "Field not found or invalid",
+                "mobilephone,email"  : "Field not found or invalid",      -- When missing both phone and email
+            }
+        }
+    }
+
+'''
+===== Reset password
+====== Request token
+. URL
+
+   /api/v1/anons/auth/reset/password
+
+. Method
+
+    GET
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Request
+
+    Find by phone number
+
+    "username" : "voncount"
+    "name"     : "minhdl"
+    "mobilephone"    : "+84943330963"
+
+    Find by email
+
+    "username" : "voncount"
+    "name"     : "minhdl"
+    "email"    : "minhdl9889@gmail.com"
+
+. Response
+.. Success
+
+    {
+        "code"      : 0,
+        "message"   : "OK"
+    }
+
+.. Error
+
+    {
+        "code"    : 997,
+        "message" : "Request params missing or invalid",
+        "data"    : {
+            "errors" : {
+                "username" : "Field not found or invalid",
+                "name" : "Field not found or invalid",
+                "uuid" : "Field not found or invalid",
+                "mobilephone"  : "Field not found or invalid",
+                "email"  : "Field not found or invalid",
+                "mobilephone,email"  : "Field not found or invalid",      -- When missing both phone and email
+            }
+        }
+    }
+
+'''
+====== Confirm token
+. URL
+
+   /api/v1/anons/auth/reset/password
+
+. Method
+
+    PUT
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Request
+
+    {
+        "token" : "1234"
+    }
+
+. Response
+.. Success
+
+    {
+        "code"      : 0,
+        "message"   : "OK"
+    }
+
+.. Error
+
+    {
+        "code"    : 997,
+        "message" : "Request params missing or invalid",
+        "data"    : {
+            "errors" : {
+                "token" : "Field not found or invalid",
+                "uuid" : "Field not found or invalid"
+            }
+        }
+    }
+
+'''
+====== Change password
+. URL
+
+   /api/v1/anons/auth/reset/password
+
+. Method
+
+    POST
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Request
+
+    {
+        "token"    : "1234",
+        "password" : "12345678"
+    }
+
+. Response
+.. Success
+
+    Return username
+
+    {
+        "code"      : 0,
+        "message"   : "OK"
+    }
+
+.. Error
+
+    {
+        "code"    : 997,
+        "message" : "Request params missing or invalid",
+        "data"    : {
+            "errors" : {
+                "token" : "Field not found or invalid",
+                "password" : "Field not found or invalid",
+                "uuid" : "Field not found or invalid"
+            }
+        }
+    }
+
+=== Authenticated API
+
+    APIs that required header X-AUTH-TOKEN
+
+'''
+==== Friend
+====== Filter
+. URL
+
+   /api/v1/auth/friends
+
+. Method
+
+    GET
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+. Response
+.. Success
+
+    Return list data that belongs to user
+    * Team info:
+        1 Total members
+        2 List detail
+    * Group info
+        1 Total members
+        2 List detail
+    * User info (all user in that company)
+        1 Total members
+        2 List detail
+
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "team": 7,
+        "team_details": [
+          {
+            "name": "Oodoo",
+            "member": 1,
+            "id": 88,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          },
+          {
+            "name": "Kwideo",
+            "member": 1,
+            "id": 274,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          },
+          {
+            "name": "Mydeo",
+            "member": 1,
+            "id": 342,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          },
+          {
+            "name": "InnoZ",
+            "member": 1,
+            "id": 343,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          },
+          {
+            "name": "Flashset",
+            "member": 2,
+            "id": 498,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          },
+          {
+            "name": "Eazzy",
+            "member": 1,
+            "id": 508,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          },
+          {
+            "name": "Jabberstorm",
+            "member": 1,
+            "id": 750,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          }
+        ],
+        "group": 2,
+        "group_details": [
+          {
+            "name": "kabal",
+            "member": 1,
+            "id": 1001,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          },
+          {
+            "name": "kabal",
+            "member": 1,
+            "id": 1002,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          }
+        ],
+        "friend": 6,
+        "friend_details": [
+          {
+            "name": "kal el",
+            "username: "superman",
+            "status_message": "i am feeling lucky",
+            "id": 918,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif",
+            "team": "red"
+          },
+          {
+            "name": "kal el",
+            "username: "superman",
+            "status_message": "i am feeling lucky",
+            "id": 249,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif",
+            "team": "red"
+          },
+          {
+            "name": "kal el",
+            "username: "superman",
+            "status_message": "i am feeling lucky",
+            "id": 189,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif",
+            "team": "red"
+          },
+          {
+            "name": "kal el",
+            "username: "superman",
+            "status_message": "i am feeling lucky",
+            "id": 754,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif",
+            "team": "red"
+          },
+          {
+            "name": "kal el",
+            "username: "superman",
+            "status_message": "i am feeling lucky",
+            "id": 173,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif",
+            "team": "red"
+          },
+          {
+            "name": "kal el",
+            "username: "superman",
+            "status_message": "i am feeling lucky",
+            "id": 749,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif",
+            "team": "red"
+          }
+        ]
+      }
+    }
+
+'''
+====== Update
+. URL
+
+   /api/v1/auth/friends/{friendFk}
+
+. Method
+
+    PUT
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    Add/remove favorite : 1/0
+    Hide/block user     : 2/3
+
+    {
+        "favorite"  : 1,
+        "status"    : 2
+    }
+
+. Response
+.. Success
+
+    Return username
+
+    {
+        "code"      : 0,
+        "message"   : "OK"
+    }
+
+'''
+==== Team
+===== Filter member
+. URL
+
+   /api/v1/auth/teams/{teamID}/members
+
+. Method
+
+    GET
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    "pageIndex" (optional) : 0 (default)
+    "pageSize"  (optional) : 10 (default)
+
+. Response
+.. Success
+
+    myteam: determine user belongs to this team (yes/no - 1/0)
+
+     {
+            "code"      : 0,
+            "message"   : "OK",
+            "data"      :
+            {
+                "pageIndex": 0,
+                "pageSize": 10,
+                "totalPage": 1,
+                "totalElement": 2,
+                "orders": "id",
+                "direction": "DESC",
+                "data": [
+                      {
+                        "status_message": "i am feeling lucky",
+                        "name": "john doe",
+                        "id": 1000,
+                        "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+                      },
+                      {
+                        "status_message": "i am feeling lucky",
+                        "name": "john doe",
+                        "id": 500,
+                        "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+                      }
+                ],
+                "last": true,
+                "first": true,
+                "myteam": 1
+            }
+
+    }
+
+'''
+==== Group
+===== Detail
+. URL
+
+   /api/v1/auth/groups/{groupID}
+
+. Method
+
+    GET
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+. Response
+.. Success
+
+    {
+        "code": 0,
+        "message": "OK",
+        "data": {
+            "id": 5,
+            "name": "Buzzbean",
+            "status": 2,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif",
+            "favorite": 0,
+            "member": 0
+        }
+    }
+
+'''
+===== Create
+. URL
+
+   /api/v1/auth/groups
+
+. Method
+
+    POST
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Request
+
+    {
+        "name": "groupe"
+    }
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Response
+.. Success
+
+    Return group's ID
+
+    {
+        "code"      : 0,
+        "message"   : "OK",
+        "data"      : {
+            "id"    : 1000
+        }
+    }
+
+.. Error
+
+    {
+        "code"    : 997,
+        "message" : "Request params missing or invalid",
+        "data"    : {
+            "errors" : {
+                "name" : "Field not found or invalid"
+            }
+        }
+    }
+
+'''
+===== Update
+. URL
+
+   /api/v1/auth/groups/{groupID}
+
+. Method
+
+    PUT
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    Add/remove favorite: 1/0
+
+    {
+        "name"      : "new name",
+        "favorite"  : 1
+    }
+
+. Response
+.. Success
+
+    {
+        "code"      : 0,
+        "message"   : "OK"
+    }
+
+'''
+===== Delete
+. URL
+
+   /api/v1/auth/groups/{groupID}
+
+. Method
+
+    DELETE
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+. Response
+.. Success
+
+    {
+        "code"      : 0,
+        "message"   : "OK"
+    }
+
+'''
+===== Filter member
+. URL
+
+   /api/v1/auth/groups/{groupID}/members
+
+. Method
+
+    GET
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    "query"     (optional) : "id/name/phone"
+    "pageIndex" (optional) : 0 (default)
+    "pageSize"  (optional) : 10 (default)
+
+. Response
+.. Success
+
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "pageIndex": 0,
+        "pageSize": 10,
+        "totalPage": 1,
+        "totalElement": 2,
+        "orders": "id",
+        "direction": "DESC",
+        "data": [
+          {
+            "status_message": "i am feeling lucky",
+            "mobilephone": "81-(199)380-5579",
+            "name": "john doe",
+            "id": 1000,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          },
+          {
+            "status_message": "i am feeling lucky",
+            "mobilephone": "385-(986)191-4898",
+            "name": "john doe",
+            "id": 500,
+            "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif"
+          }
+        ],
+        "last": true,
+        "first": true
+      }
+    }
+
+'''
+===== Add member
+. URL
+
+   /api/v1/auth/groups/{groupID}/members
+
+. Method
+
+    POST
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    user's ID array
+
+    {
+        "ids" : [1,2,3]
+    }
+
+. Response
+.. Success
+
+    {
+        "code"      : 0,
+        "message"   : "OK"
+    }
+
+'''
+===== Delete member
+. URL
+
+   /api/v1/auth/groups/{groupID}/members
+
+. Method
+
+    DELETE
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    Request params
+
+    "ids" : 1,2,3
+
+. Response
+.. Success
+
+    {
+        "code"      : 0,
+        "message"   : "OK"
+    }
+
+'''
+==== Profile
+===== Detail
+. URL
+
+   /api/v1/auth/users/{userID}/profile
+
+. Method
+
+    GET
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+. Response
+.. Success
+
+    myprofile: viewing your own profile/other profile (1/0)
+
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "id": 1000,
+        "createdDate": 1467510856000,
+        "modifiedDate": 1446904335000,
+        "username": "saovv",
+        "status": 1,
+        "mobilephone": "(82)12345678910",
+        "nickname": "blawsonrr",
+        "email": "sfoxrr@whitehouse.gov",
+        "avatar": "http://let.tramsdev.co.kr:5001/no_avatar.gif",
+        "statusMessage": "i am feeling lucky",
+        "team": "Babblestorm",
+        "position": "ADMIN",
+        "myprofile": 0,
+        "favorite": 0
+      }
+    }
+
+'''
+===== Update
+. URL
+
+   /api/v1/auth/users/profile
+
+. Method
+
+    PUT
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    password's length must be greater than 8 characters
+
+    {
+        "username": "minhdl",
+        "password": "12345678"
+    }
+
+. Response
+.. Success
+
+    {
+        "code": 0,
+        "message": "OK"
+    }
+
+.. Error
+
+    {
+        "code"    : 997,
+        "message" : "Request params missing or invalid",
+        "data"    : {
+            "errors" : {
+                "username" : "Field not found or invalid",
+                "password": "Field not found or invalid"
+            }
+        }
+    }
+
+'''
+==== Attachment
+===== Upload user's avatar
+. URL
+
+   /api/v1/auth/users/profile
+
+. Method
+
+    POST
+
+. Content-Type
+
+    multipart/form-data; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    files: avatar.png
+
+. Response
+.. Success
+
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "avatar": "http://let.tramsdev.co.kr/upload/user/avatar/55b94605-ad30-4266-8c8d-7e1340fdf046_o.jpg"
+      }
+    }
+
+'''
+===== Upload group's avatar
+. URL
+
+   /api/v1/auth/attachments/groups/{groupId}/avatar
+
+. Method
+
+    POST
+
+. Content-Type
+
+    multipart/form-data; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    files: avatar.png
+
+. Response
+.. Success
+
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "avatar": "http://let.tramsdev.co.kr/upload/user/avatar/55b94605-ad30-4266-8c8d-7e1340fdf046_o.jpg"
+      }
+    }
+    
+'''
+===== Upload chat
+. URL
+
+   /api/v1/auth/attachments/chat
+
+. Method
+
+    POST
+
+. Content-Type
+
+    multipart/form-data; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    ChannelSid     : Room's sid returned from TWILIO's callback
+
+    ChannelSid     : "ABC123XYZ"
+    files          : avatar.png
+
+. Response
+.. Success
+
+    {
+	  "code": 0,
+	  "message": "OK",
+	  "data": [
+	    {
+	      "name": "avatar.png",
+	      "type": "image/png",
+	      "size": "97.87 KB",
+	      "uri": "http://let.tramsdev.co.kr:5001/upload/chat/dc9754ac-7da1-4ea3-8b57-fe8d99975f7a_avatar.png"
+	    }
+	  ]
+	}
+
+'''
+===== Upload room's avatar
+. URL
+
+   /api/v1/auth/attachments/room
+
+. Method
+
+    POST
+
+. Content-Type
+
+    multipart/form-data; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+    ChannelSid     : Room's sid returned from TWILIO's callback
+
+    ChannelSid     : "ABC123XYZ"
+    files          : avatar.png
+
+. Response
+.. Success
+
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "avatar": "http://let.tramsdev.co.kr/upload/chat/rooms/55b94605-ad30-4266-8c8d-7e1340fdf046_o.jpg"
+      }
+    }
+
+
+'''
+==== RTC
+===== Grant access
+. URL
+
+   /api/v1/rtc/grantaccess
+
+. Method
+
+    GET
+
+. Content-Type
+
+    application/json; charset=UTF-8
+
+. Header
+
+    X-AUTH-TOKEN
+
+. Request
+
+. Response
+.. Success
+
+    voice_token : Token using for voice message
+    rtc_token   : Token using for chat, video call
+
+    {
+      "code"    : 0,
+      "message" : "OK",
+      "data"    : {
+        "voice_token"   : "123.456.789",
+        "rtc_token"     : "987.654.321"
+      }
+    }
+
+'''
+===== Twilio Client
+====== Call
+
+    "from"  : username
+    "to"    : friend's username
+
+====== Conference
+
+    "from"  : username,
+    "room"  : room's name

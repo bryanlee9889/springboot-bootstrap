@@ -1,0 +1,198 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.averagejoedev.mappers.MapperUser">
+    
+    <resultMap id="UserMap" type="User">
+        <id     column="id"             property="id" />
+        <result column="created_date"   property="createdDate" />
+        <result column="modified_date"  property="modifiedDate" />
+        <result column="username"       property="username" />
+        <result column="password"       property="password" />
+        <result column="name"           property="name" />
+        <result column="status"         property="status" />
+        <result column="mobilephone"    property="mobilephone" />
+        <result column="telephone"      property="telephone" />
+        <result column="nickname"       property="nickname" />
+        <result column="userid"         property="userid" />
+        <result column="email"          property="email" />
+        <result column="avatar"         property="avatar" />
+        <result column="status_message" property="statusMessage" />
+    </resultMap>
+
+    <select id="find" resultMap="UserMap">
+        SELECT
+                    u.*
+        FROM        users   u
+        <where>
+            <if test="username != null">
+                <bind name="username%" value="username + '%'"/>
+                        u.username      LIKE #{username%}
+            </if>
+            <if test="statuses != null">
+                AND     u.status        IN
+                <foreach collection="statuses" index="index" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="mobilephone != null">
+                <bind name="mobilephone%" value="mobilephone + '%'" />
+                AND     u.mobilephone   LIKE #{mobilephone%}
+            </if>
+            <if test="email != null">
+                <bind name="email%" value="email + '%'" />
+                AND     u.email         LIKE #{email%}
+            </if>
+            <if test="name != null">
+                <bind name="name%" value="name + '%'" />
+                AND     u.name          LIKE #{name%}
+            </if>
+            <if test="userid != null">
+                <bind name="userid%" value="userid + '%'" />
+                AND     u.userid        LIKE #{userid%}
+            </if>
+        </where>
+        ORDER BY        ${orders} ${direction}
+        LIMIT           ${pageIndex*pageSize},${pageSize}
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT
+                    count(*)
+        FROM        users   u
+        <where>
+            <if test="username != null">
+                <bind name="username%" value="username + '%'"/>
+                        u.username      LIKE #{username%}
+            </if>
+            <if test="statuses != null">
+                AND     u.status        IN
+                <foreach collection="statuses" index="index" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="mobilephone != null">
+                <bind name="mobilephone%" value="mobilephone + '%'" />
+                AND     u.mobilephone   LIKE #{mobilephone%}
+            </if>
+            <if test="email != null">
+                <bind name="email%" value="email + '%'" />
+                AND     u.email         LIKE #{email%}
+            </if>
+            <if test="name != null">
+                <bind name="name%" value="name + '%'" />
+                AND     u.name          LIKE #{name%}
+            </if>
+            <if test="userid != null">
+                <bind name="userid%" value="userid + '%'" />
+                AND     u.userid        LIKE #{userid%}
+            </if>
+        </where>
+    </select>
+
+    <select id="findOne" resultMap="UserMap">
+        SELECT
+                    u.*
+        FROM        users   u
+        <where>
+            <if test="username != null">
+                <bind name="username%" value="username + '%'"/>
+                        u.username      LIKE #{username%}
+            </if>
+            <if test="statuses != null">
+                AND     u.status        IN
+                <foreach collection="statuses" index="index" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="mobilephone != null">
+                <bind name="mobilephone%" value="mobilephone + '%'" />
+                AND     u.mobilephone   LIKE #{mobilephone%}
+            </if>
+            <if test="email != null">
+                <bind name="email%" value="email + '%'" />
+                AND     u.email         LIKE #{email%}
+            </if>
+            <if test="name != null">
+                <bind name="name%" value="name + '%'" />
+                AND     u.name          LIKE #{name%}
+            </if>
+            <if test="userid != null">
+                <bind name="userid%" value="userid + '%'" />
+                AND     u.userid        LIKE #{userid%}
+            </if>
+        </where>
+        ORDER BY        ${orders} ${direction}
+        LIMIT           1
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO users
+        (
+            created_date,
+            username,
+            password,
+            mobilephone,
+            telephone,
+            name,
+            email,
+            nickname,
+            avatar
+        )
+        VALUES
+        (
+            current_timestamp(),
+            #{username},
+            #{password},
+            #{mobilephone},
+            #{telephone},
+            #{name},
+            #{email},
+            #{nickname},
+            #{avatar}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE users
+        <set>
+            modified_date   = current_timestamp(),
+            <if test="username != null">
+                username    = #{username},
+            </if>
+            <if test="password != null">
+                password    = #{password},
+            </if>
+            <if test="mobilephone != null">
+                mobilephone = #{mobilephone},
+            </if>
+            <if test="telephone != null">
+                telephone   = #{telephone},
+            </if>
+            <if test="name != null">
+                name        = #{name},
+            </if>
+            <if test="email != null">
+                email       = #{email},
+            </if>
+            <if test="nickname != null">
+                nickname    = #{nickname},
+            </if>
+            <if test="status != null">
+                status      = #{status},
+            </if>
+            <if test="statusMessage != null">
+                status_message = #{statusMessage},
+            </if>
+            <if test="avatar != null">
+                avatar      = #{avatar},
+            </if>
+            <if test="userid != null">
+                userid      = #{userid},
+            </if>
+        </set>
+        WHERE id          = #{id}
+    </update>
+
+</mapper>
